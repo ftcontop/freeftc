@@ -1,69 +1,695 @@
--- Full obfuscation with maintained functionality
-local a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z=game:GetService("Players"),game:GetService("UserInputService"),game:GetService("RunService"),game:GetService("Workspace"),a.LocalPlayer,a.LocalPlayer and a.LocalPlayer:WaitForChild("PlayerGui") or nil,{},0,false,{},0,0,false,0,false,false,0,false,false,false,false,false,false,false,false,false,false,false,false
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
-local A="Unknown"if syn then A="Synapse"elseif getexecutor then local B=getexecutor():lower()if B:find("krnl")then A="Krnl"elseif B:find("fluxus")then A="Fluxus"elseif B:find("wave")then A="Wave"elseif B:find("xeno")then A="Xeno"elseif B:find("solara")then A="Solara"elseif B:find("volcano")then A="Volcano"elseif B:find("delta")then A="Delta"else A=B end end
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
 
-local C,D,E,F=nil,nil,nil,nil
-pcall(function()C=loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()D=loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()E=loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()end)
+--// UI Library (Fluent-Renewed)
+local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
+local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()
+local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
 
-local G={pullEnabled=false,offsetDistance=3,pullSpeed=100,pullDistance=50,walkspeedMultiplier=1,walkspeedBase=16,qbAimbotEnabled=false,qbPredictionTime=0.15,qbFOV=60,qbAimKey=Enum.KeyCode.E,qbSmoothness=1,flyEnabled=false,flySpeed=50,tackleReachEnabled=false,tackleReachDistance=5,hitboxTackleReachEnabled=false,hitboxTackleReachDistance=5,jumpPowerEnabled=false,jumpPower=0,hitboxVisualizerEnabled=false,hitboxSize=1}
+--// FTCHub Config
+local cfg = {
+    -- Pull Vector
+    pullEnabled = false,
+    offsetDistance = 3,
 
-local H,I,J=false,nil,b.TouchEnabled
+    -- WalkSpeed
+    walkspeedMultiplier = 1,
+    walkspeedBase = 16,
 
-if C then
-local K=C:CreateWindow({Title="FTCHub",SubTitle="UF Script",TabWidth=100,Size=UDim2.fromOffset(500,380),Acrylic=false,Theme="Dark",MinimizeKey=Enum.KeyCode.RightShift})
-C:Notify({Title="FTCHub",Content="UI successfully loaded.",Duration=4})
+    -- QB Aimbot
+    qbAimbotEnabled = false,
+    qbPredictionTime = 0.15,
+    qbFOV = 60,
+    qbAimKey = Enum.KeyCode.E,
+    qbSmoothness = 1,
 
-local L=K:AddTab({Title="Player",Icon="user"})
-local M=K:AddTab({Title="Pull Vector",Icon="magnet"})
-local N=K:AddTab({Title="QB Aimbot",Icon="crosshair"})
-local O=K:AddTab({Title="Fly",Icon="plane"})
-local P=K:AddTab({Title="Settings",Icon="settings"})
-local Q=K:AddTab({Title="Hitbox",Icon="box"})
+    -- Fly
+    flyEnabled = false,
+    flySpeed = 50,
 
-local R,S=false,nil
+    -- Tackle Reach
+    tackleReachEnabled = false,
+    tackleReachDistance = 5,
 
-L:AddToggle("WalkspeedToggle",{Title="Enable WalkSpeed",Description="Toggle walkspeed modification",Default=false,Callback=function(T)R=T end})
-L:AddSlider("WalkspeedSlider",{Title="WalkSpeed Multiplier",Description="Adjust your character's walk speed",Default=1,Min=0.5,Max=5,Rounding=2,Callback=function(T)G.walkspeedMultiplier=T end})
-L:AddToggle("JumpPowerToggle",{Title="Enable Jump Power",Description="Toggle jump power boost",Default=false,Callback=function(T)m=T end})
-L:AddSlider("JumpPowerSlider",{Title="Jump Power",Description="Adjust jump height",Default=0,Min=0,Max=100,Rounding=1,Callback=function(T)G.jumpPower=T end})
+    -- Hitbox Tackle Reach
+    hitboxTackleReachEnabled = false,
+    hitboxTackleReachDistance = 5,
 
-M:AddToggle("PullToggle",{Title="Enable Pull",Description="Hold M1 to pull to ball",Default=false,Callback=function(T)G.pullEnabled=T end})
-M:AddSlider("OffsetSlider",{Title="Offset Distance",Description="Distance to stop before ball",Default=3,Min=0,Max=10,Rounding=1,Callback=function(T)G.offsetDistance=T end})
-M:AddSlider("PullSpeedSlider",{Title="Pull Speed",Description="How fast you move to the ball",Default=100,Min=20,Max=200,Rounding=5,Callback=function(T)G.pullSpeed=T end})
-M:AddSlider("PullDistanceSlider",{Title="Pull Distance",Description="Maximum distance to pull from",Default=50,Min=10,Max=150,Rounding=5,Callback=function(T)G.pullDistance=T end})
-local U=M:AddToggle("MobileButtonToggle",{Title="Mobile Pull Button",Description="Show on-screen pull button for mobile",Default=false,Callback=function(T)H=T if T then V()else W()end end})
+    -- Jump Power
+    jumpPowerEnabled = false,
+    jumpPower = 0,
 
-N:AddToggle("AimbotToggle",{Title="Enable QB Aimbot",Description="Automatically aim at targets",Default=false,Callback=function(T)G.qbAimbotEnabled=T end})
-N:AddSlider("PredictionSlider",{Title="Prediction Time",Description="Time to predict target movement",Default=0.15,Min=0.05,Max=0.5,Rounding=2,Callback=function(T)G.qbPredictionTime=T end})
-N:AddSlider("FOVSlider",{Title="FOV (degrees)",Description="Field of view for aimbot targeting",Default=60,Min=10,Max=180,Rounding=0,Callback=function(T)G.qbFOV=T end})
-N:AddSlider("SmoothnessSlider",{Title="Aim Smoothness",Description="Lower = smoother aim",Default=1,Min=0.1,Max=1,Rounding=2,Callback=function(T)G.qbSmoothness=T end})
+    -- Hitbox Visualizer
+    hitboxVisualizerEnabled = false,
+    hitboxSize = 1,
+}
 
-O:AddToggle("FlyToggle",{Title="Enable Fly",Description="Fly around the map (WASD + Space/Ctrl)",Default=false,Callback=function(T)G.flyEnabled=T if not T then local X=e.Character and e.Character:FindFirstChild("HumanoidRootPart")if X then X.Velocity=Vector3.zero end end end})
-O:AddSlider("FlySpeedSlider",{Title="Fly Speed",Description="Adjust flying speed",Default=50,Min=10,Max=150,Rounding=0,Callback=function(T)G.flySpeed=T end})
+--// Mobile Button Variables
+local mobileButtonEnabled = false
+local mobilePullButton = nil
 
-Q:AddToggle("TackleReachToggle",{Title="Tackle Reach Enabled",Description="Extend your tackle range",Default=false,Callback=function(T)G.tackleReachEnabled=T end})
-Q:AddSlider("TackleReachSlider",{Title="Tackle Reach Distance",Description="How far you can tackle from",Default=5,Min=1,Max=25,Rounding=1,Callback=function(T)G.tackleReachDistance=T end})
-Q:AddToggle("HitboxVisualizerToggle",{Title="Hitbox Visualizer",Description="Make your head bigger to tackle farther",Default=false,Callback=function(T)G.hitboxVisualizerEnabled=T end})
-Q:AddSlider("HitboxSizeSlider",{Title="Hitbox Size",Description="Adjust your head size for hitting range",Default=1,Min=1,Max=3,Rounding=2,Callback=function(T)G.hitboxSize=T end})
+--// Add M1 held flag for continuous teleport
+local m1Held = false
 
-D:SetLibrary(K)E:SetLibrary(K)D:IgnoreThemeSettings()D:SetIgnoreIndexes({})E:SetFolder("FTCHub")D:SetFolder("FTCHub/configs")E:BuildInterfaceSection(P)D:BuildConfigSection(P)K:SelectTab(1)
+--// Window
+local Window = Library:CreateWindow({
+    Title = "FTCHub",
+    SubTitle = "UF Script",
+    TabWidth = 100,
+    Size = UDim2.fromOffset(500, 380),
+    Acrylic = false,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.RightShift
+})
+
+--// Notification
+Library:Notify({
+    Title = "FTCHub",
+    Content = "UI successfully loaded.",
+    Duration = 4
+})
+
+--------------------------------------------------------------------
+--// Tabs
+--------------------------------------------------------------------
+local PlayerTab = Window:AddTab({ Title = "Player", Icon = "user" })
+local PullTab = Window:AddTab({ Title = "Pull Vector", Icon = "magnet" })
+local AimbotTab = Window:AddTab({ Title = "QB Aimbot", Icon = "crosshair" })
+local FlyTab = Window:AddTab({ Title = "Fly", Icon = "plane" })
+local Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+
+local HitboxTab = Window:AddTab({
+    Title = "Hitbox",
+    Icon = "box"
+})
+
+--------------------------------------------------------------------
+--// Player Tab
+--------------------------------------------------------------------
+local walkspeedEnabled = false
+local jumpPowerEnabled = false
+local jumpForce = nil
+
+local WalkspeedToggle = PlayerTab:AddToggle("WalkspeedToggle", {
+    Title = "Enable WalkSpeed",
+    Description = "Toggle walkspeed modification",
+    Default = false,
+    Callback = function(Value)
+        walkspeedEnabled = Value
+    end
+})
+
+local WalkspeedSlider = PlayerTab:AddSlider("WalkspeedSlider", {
+    Title = "WalkSpeed Multiplier",
+    Description = "Adjust your character's walk speed",
+    Default = 1,
+    Min = 0.5,
+    Max = 5,
+    Rounding = 2,
+    Callback = function(Value)
+        cfg.walkspeedMultiplier = Value
+    end
+})
+
+local JumpPowerToggle = PlayerTab:AddToggle("JumpPowerToggle", {
+    Title = "Enable Jump Power",
+    Description = "Toggle jump power boost",
+    Default = false,
+    Callback = function(Value)
+        jumpPowerEnabled = Value
+    end
+})
+
+local JumpPowerSlider = PlayerTab:AddSlider("JumpPowerSlider", {
+    Title = "Jump Power",
+    Description = "Adjust jump height",
+    Default = 0,
+    Min = 0,
+    Max = 100,
+    Rounding = 1,
+    Callback = function(Value)
+        cfg.jumpPower = Value
+    end
+})
+
+--------------------------------------------------------------------
+--// Pull Vector Tab
+--------------------------------------------------------------------
+local PullToggle = PullTab:AddToggle("PullToggle", {
+    Title = "Enable Pull",
+    Description = "Press M1 to teleport to ball",
+    Default = false,
+    Callback = function(Value)
+        cfg.pullEnabled = Value
+    end
+})
+
+local OffsetSlider = PullTab:AddSlider("OffsetSlider", {
+    Title = "Offset Distance",
+    Description = "Distance to stop before ball",
+    Default = 3,
+    Min = 0,
+    Max = 10,
+    Rounding = 1,
+    Callback = function(Value)
+        cfg.offsetDistance = Value
+    end
+})
+
+local MobileButtonToggle = PullTab:AddToggle("MobileButtonToggle", {
+    Title = "Mobile Pull Button",
+    Description = "Show on-screen pull button for mobile",
+    Default = false,
+    Callback = function(Value)
+        mobileButtonEnabled = Value
+        if Value then
+            createMobilePullButton()
+        else
+            destroyMobilePullButton()
+        end
+    end
+})
+
+--------------------------------------------------------------------
+--// QB Aimbot Tab
+--------------------------------------------------------------------
+local AimbotToggle = AimbotTab:AddToggle("AimbotToggle", {
+    Title = "Enable QB Aimbot",
+    Description = "Automatically aim at targets",
+    Default = false,
+    Callback = function(Value)
+        cfg.qbAimbotEnabled = Value
+    end
+})
+
+local PredictionSlider = AimbotTab:AddSlider("PredictionSlider", {
+    Title = "Prediction Time",
+    Description = "Time to predict target movement",
+    Default = 0.15,
+    Min = 0.05,
+    Max = 0.5,
+    Rounding = 2,
+    Callback = function(Value)
+        cfg.qbPredictionTime = Value
+    end
+})
+
+local FOVSlider = AimbotTab:AddSlider("FOVSlider", {
+    Title = "FOV (degrees)",
+    Description = "Field of view for aimbot targeting",
+    Default = 60,
+    Min = 10,
+    Max = 180,
+    Rounding = 0,
+    Callback = function(Value)
+        cfg.qbFOV = Value
+    end
+})
+
+local SmoothnessSlider = AimbotTab:AddSlider("SmoothnessSlider", {
+    Title = "Aim Smoothness",
+    Description = "Lower = smoother aim",
+    Default = 1,
+    Min = 0.1,
+    Max = 1,
+    Rounding = 2,
+    Callback = function(Value)
+        cfg.qbSmoothness = Value
+    end
+})
+
+--------------------------------------------------------------------
+--// Fly Tab
+--------------------------------------------------------------------
+local FlyToggle = FlyTab:AddToggle("FlyToggle", {
+    Title = "Enable Fly",
+    Description = "Fly around the map (WASD + Space/Ctrl)",
+    Default = false,
+    Callback = function(Value)
+        cfg.flyEnabled = Value
+        if not Value then
+            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.Velocity = Vector3.zero
+            end
+        end
+    end
+})
+
+local FlySpeedSlider = FlyTab:AddSlider("FlySpeedSlider", {
+    Title = "Fly Speed",
+    Description = "Adjust flying speed",
+    Default = 50,
+    Min = 10,
+    Max = 150,
+    Rounding = 0,
+    Callback = function(Value)
+        cfg.flySpeed = Value
+    end
+})
+
+--------------------------------------------------------------------
+--// Hitbox Tab
+--------------------------------------------------------------------
+local TackleReachToggle = HitboxTab:AddToggle("TackleReachToggle", {
+    Title = "Tackle Reach Enabled",
+    Description = "Extend your tackle range",
+    Default = false,
+    Callback = function(Value)
+        cfg.tackleReachEnabled = Value
+    end
+})
+
+local TackleReachSlider = HitboxTab:AddSlider("TackleReachSlider", {
+    Title = "Tackle Reach Distance",
+    Description = "How far you can tackle from",
+    Default = 5,
+    Min = 1,
+    Max = 25,
+    Rounding = 1,
+    Callback = function(Value)
+        cfg.tackleReachDistance = Value
+    end
+})
+
+local HitboxVisualizerToggle = HitboxTab:AddToggle("HitboxVisualizerToggle", {
+    Title = "Hitbox Visualizer",
+    Description = "Make your head bigger to tackle farther",
+    Default = false,
+    Callback = function(Value)
+        cfg.hitboxVisualizerEnabled = Value
+    end
+})
+
+local HitboxSizeSlider = HitboxTab:AddSlider("HitboxSizeSlider", {
+    Title = "Hitbox Size",
+    Description = "Adjust your head size for hitting range",
+    Default = 1,
+    Min = 1,
+    Max = 3,
+    Rounding = 2,
+    Callback = function(Value)
+        cfg.hitboxSize = Value
+    end
+})
+
+--------------------------------------------------------------------
+--// Save & Interface Management
+--------------------------------------------------------------------
+SaveManager:SetLibrary(Library)
+InterfaceManager:SetLibrary(Library)
+
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("FTCHub")
+SaveManager:SetFolder("FTCHub/configs")
+
+InterfaceManager:BuildInterfaceSection(Settings)
+SaveManager:BuildConfigSection(Settings)
+
+Window:SelectTab(1)
+
+--------------------------------------------------------------------
+--// Mobile Button Functions
+--------------------------------------------------------------------
+function createMobilePullButton()
+    if mobilePullButton then return end
+    
+    local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+    
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "FTCHub_MobileButton"
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    local button = Instance.new("TextButton")
+    button.Name = "PullButton"
+    button.Size = UDim2.new(0, 80, 0, 80)
+    button.Position = UDim2.new(1, -100, 0.5, -40)
+    button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    button.BackgroundTransparency = 0.3
+    button.BorderSizePixel = 0
+    button.Text = "PULL"
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 18
+    button.Font = Enum.Font.GothamBold
+    button.Parent = screenGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = button
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(100, 100, 100)
+    stroke.Thickness = 2
+    stroke.Parent = button
+    
+    local shouldTeleport = false
+    
+    button.MouseButton1Click:Connect(function()
+        shouldTeleport = true
+    end)
+    
+    button.TouchTap:Connect(function()
+        shouldTeleport = true
+    end)
+    
+    mobilePullButton = {
+        gui = screenGui,
+        button = button,
+        checkTeleport = function() 
+            if shouldTeleport then
+                shouldTeleport = false
+                return true
+            end
+            return false
+        end
+    }
+    
+    screenGui.Parent = PlayerGui
+    
+    Library:Notify({
+        Title = "Mobile Button",
+        Content = "Pull button created on right side!",
+        Duration = 3
+    })
 end
 
-function V()if I then return end local Y=e:WaitForChild("PlayerGui")local Z=Instance.new("ScreenGui")Z.Name="FTCHub_MobileButton"Z.ResetOnSpawn=false Z.ZIndexBehavior=Enum.ZIndexBehavior.Sibling if J then Z.Size=UDim2.fromScale(1,1)end local a_=Instance.new("Frame")a_.Name="MainContainer"a_.Size=UDim2.new(0,120,0,140)a_.Position=UDim2.new(1,-140,0.5,-70)a_.BackgroundColor3=Color3.fromRGB(20,20,20)a_.BorderSizePixel=0 a_.Parent=Z local b_=Instance.new("UICorner")b_.CornerRadius=UDim.new(0,15)b_.Parent=a_ local c_=Instance.new("UIStroke")c_.Color=Color3.fromRGB(100,100,100)c_.Thickness=2 c_.Parent=a_ local d_=Instance.new("Frame")d_.Name="DragHeader"d_.Size=UDim2.new(1,0,0,30)d_.BackgroundColor3=Color3.fromRGB(30,30,30)d_.BorderSizePixel=0 d_.Parent=a_ local e_=Instance.new("UICorner")e_.CornerRadius=UDim.new(0,15)e_.Parent=d_ local f_=Instance.new("TextLabel")f_.Name="DragLabel"f_.Size=UDim2.new(1,-30,1,0)f_.BackgroundTransparency=1 f_.Text="FTCHub"f_.TextColor3=Color3.fromRGB(255,255,255)f_.TextSize=12 f_.Font=Enum.Font.GothamBold f_.Parent=d_ local g_=Instance.new("TextButton")g_.Name="CloseButton"g_.Size=UDim2.new(0,25,0,25)g_.Position=UDim2.new(1,-28,0,3)g_.BackgroundColor3=Color3.fromRGB(255,50,50)g_.BackgroundTransparency=0.1 g_.BorderSizePixel=0 g_.Text="X"g_.TextColor3=Color3.fromRGB(255,255,255)g_.TextSize=14 g_.Font=Enum.Font.GothamBold g_.Parent=d_ local h_=Instance.new("UICorner")h_.CornerRadius=UDim.new(0,8)h_.Parent=g_ local i_=Instance.new("TextButton")i_.Name="PullButton"i_.Size=UDim2.new(0.9,0,0,50)i_.Position=UDim2.new(0.05,0,0,40)i_.BackgroundColor3=Color3.fromRGB(0,100,255)i_.BackgroundTransparency=0.2 i_.BorderSizePixel=0 i_.Text="PULL"i_.TextColor3=Color3.fromRGB(255,255,255)i_.TextSize=18 i_.Font=Enum.Font.GothamBold i_.Parent=a_ local j_=Instance.new("UICorner")j_.CornerRadius=UDim.new(0,12)j_.Parent=i_ local k_=Instance.new("UIStroke")k_.Color=Color3.fromRGB(0,150,255)k_.Thickness=2 k_.Parent=i_ local l_,m_,n_,o_=false,nil,nil,nil d_.InputBegan:Connect(function(p_,q_)if q_ then return end if p_.UserInputType==Enum.UserInputType.Touch or p_.UserInputType==Enum.UserInputType.MouseButton1 then l_=true n_=p_.Position o_=a_.Position m_=p_.Changed:Connect(function()if l_ then local r_=p_.Position-n_ a_.Position=UDim2.new(o_.X.Scale,o_.X.Offset+r_.X,o_.Y.Scale,o_.Y.Offset+r_.Y)end end)end end)d_.InputEnded:Connect(function(p_,q_)if p_.UserInputType==Enum.UserInputType.Touch or p_.UserInputType==Enum.UserInputType.MouseButton1 then l_=false if m_ then m_:Disconnect()end end end)local s_=false i_.MouseButton1Click:Connect(function()s_=true end)i_.TouchTap:Connect(function()s_=true end)g_.MouseButton1Click:Connect(function()H=false W()U:SetValue(false)end)g_.TouchTap:Connect(function()H=false W()U:SetValue(false)end)I={gui=Z,button=i_,checkPull=function()if s_ then s_=false return true end return false end}Z.Parent=Y if C then C:Notify({Title="Mobile Button",Content="Pull button created! Drag to move, X to close.",Duration=3})end end
+function destroyMobilePullButton()
+    if mobilePullButton then
+        if mobilePullButton.gui then
+            mobilePullButton.gui:Destroy()
+        end
+        mobilePullButton = nil
+        
+        Library:Notify({
+            Title = "Mobile Button",
+            Content = "Pull button removed.",
+            Duration = 2
+        })
+    end
+end
 
-function W()if I then if I.gui then I.gui:Destroy()end I=nil if C then C:Notify({Title="Mobile Button",Content="Pull button removed.",Duration=2})end end end
+--------------------------------------------------------------------
+--// Helper Functions
+--------------------------------------------------------------------
+local function getCharacter()
+    return LocalPlayer.Character
+end
 
-local function t_()return e.Character end
-local function u_()local v_=e.Character return v_ and v_:FindFirstChild("HumanoidRootPart")end
-local function w_()local v_=e.Character return v_ and v_:FindFirstChildOfClass("Humanoid")end
-local function x_(y_)if e.Team and y_.Team then return e.Team==y_.Team end return false end
-local function z_()local u_=u_()if not u_ then return nil end local A_=nil local B_=nil local C_=u_.Position for _,D_ in ipairs(a:GetPlayers())do if D_~=e and D_.Character and not x_(D_)then local E_=D_.Character:FindFirstChild("HumanoidRootPart")local F_=D_.Character:FindFirstChildOfClass("Humanoid")if E_ and F_ and F_.Health>0 then local G_=(E_.Position-C_).Magnitude if G_<=100 then if not B_ or G_<B_ then A_=D_ B_=G_ end end end end end return A_ end
+local function getHumanoidRootPart()
+    local character = LocalPlayer.Character
+    return character and character:FindFirstChild("HumanoidRootPart")
+end
 
-local H_,I_,J_=nil,0,0.5
-local function K_()local L_=tick()if H_ and(L_-I_)<J_ then if H_.Parent then return H_ else H_=nil end end local M_={}for _,N_ in ipairs(e:GetService("Workspace"):GetDescendants())do if N_:IsA("BasePart")then local O_=N_.Name:lower()if O_:find("ball")or O_:find("football")then table.insert(M_,N_)end elseif N_:IsA("Model")then local O_=N_.Name:lower()if O_:find("ball")or O_:find("football")then local P_=N_:FindFirstChildWhichIsA("BasePart")if P_ then table.insert(M_,P_)end end end end local Q_,R_=nil,nil local u_=u_()if not u_ then return nil end local C_=u_.Position for _,S_ in ipairs(M_)do local T_=(S_.Position-C_).Magnitude if not R_ or T_<R_ then Q_=S_ R_=T_ end end if Q_ then H_=Q_ I_=L_ end return Q_ end
+local function getHumanoid()
+    local character = LocalPlayer.Character
+    return character and character:FindFirstChildOfClass("Humanoid")
+end
 
-b.InputBegan:Connect(function(U_,V_)if V_ then return end if U_.UserInputType==Enum.UserInputType.MouseButton1 then l=true end if U_.KeyCode==G.qbAimKey then i=true end if J and I and I.checkPull()then l=true end end)
-b.InputEnded:Connect(function(U_,V_)if U_.UserInputType==Enum.UserInputType.MouseButton1 then l=false end if U_.KeyCode==G.qbAimKey then i=false end end)
+local function isOnSameTeam(player)
+    if LocalPlayer.Team and player.Team then
+        return LocalPlayer.Team == player.Team
+    end
+    return false
+end
 
-d.Heartbeat:Connect(function(W_)local v_=t_()local F_=w_()if F_ then if R then F_.WalkSpeed=16*G.walkspeedMultiplier else F_.WalkSpeed=16 end end if G.pullEnabled and l then local u_=u_()if u_ then local X_=K_()if X_ and X_.Parent then local Y_=X_.Position local Z_=u_.Position local a0=(Y_-Z_).Magnitude if a0<=G.pullDistance and a0>G.offsetDistance then local b0=(Y_-Z_).Unit local c0=G.pullSpeed*W_ local d0=math.min(c0,a0-G.offsetDistance)u_.CFrame=u_.CFrame+(b0*d0)end end end end if G.hitboxVisualizerEnabled then if v_ then local e0=v_:FindFirstChild("Head")if e0 then e0.Size=Vector3.new(2*G.hitboxSize,2*G.hitboxSize,2*G.hitboxSize)e0.Transparency=0.5 end end for _,f0 in pairs(a:GetPlayers())do if f0~=e and f0.Character then local g0=f0.Character:FindFirstChild("Head")if g0 then g0.Size=Vector3.new(2*G.hitboxSize,2*G.hitboxSize,2*G.hitboxSize)g0.Transparency=0.5 end end end else if v_ then local e0=v_:FindFirstChild("Head")if e0 then e0.Size=Vector3.new(2,2,2)e0.Transparency=0 end end for _,f0 in pairs(a:GetPlayers())do if f0~=e and f0.Character then local g0=f0.Character:FindFirstChild("Head")if g0 then g0.Size=Vector3.new(2,2,2)g0.Transparency=0 end end end end local u_=t_()and t_():FindFirstChild("HumanoidRootPart")if u_ and m then if not S then S=Instance.new("BodyForce",u_)S.Name="JumpBoost"end local h0=G.jumpPower/100*80 S.Force=Vector3.new(0,h0*100,0)else if S then S:Destroy()S=nil end end if G.qbAimbotEnabled and i then local i0=z_()if i0 and i0.Character then local E_=i0.Character:FindFirstChild("HumanoidRootPart")if E_ then local u_=u_()if u_ then local j0=E_.Position local k0=E_.AssemblyLinearVelocity or E_.Velocity local l0=j0+k0*G.qbPredictionTime local m0,n0=d.Camera:WorldToViewportPoint(l0)local o0=b:GetMouseLocation()local p0=m0.X-o0.X local q0=m0.Y-o0.Y local r0=math.sqrt(p0*p0+q0*q0)local s0=(G.qbFOV/180)*math.min(d.Camera.ViewportSize.X,d.Camera.ViewportSize.Y)/2 if n0 and r0<=s0 then local t0=(l0-d.Camera.CFrame.Position).Unit local u0=CFrame.new(d.Camera.CFrame.Position,d.Camera.CFrame.Position+t0)d.Camera.CFrame=d.Camera.CFrame:Lerp(u0,G.qbSmoothness)end end end end end if G.flyEnabled then local u_=u_()if u_ then local v0=Vector3.zero local w0=d.Camera local x0=w0.CFrame if b:IsKeyDown(Enum.KeyCode.W)then v0=v0+x0.LookVector end if b:IsKeyDown(Enum.KeyCode.S)then v0=v0-x0.LookVector end if b:IsKeyDown(Enum.KeyCode.A)then v0=v0-x0.RightVector end if b:IsKeyDown(Enum.KeyCode.D)then v0=v0+x0.RightVector end if b:IsKeyDown(Enum.KeyCode.Space)then v0=v0+Vector3.new(0,1,0)end if b:IsKeyDown(Enum.KeyCode.LeftControl)then v0=v0+Vector3.new(0,-1,0)end if v0.Magnitude>0 then v0=v0.Unit end u_.Velocity=v0*G.flySpeed end end end)
+local function getClosestTarget()
+    local hrp = getHumanoidRootPart()
+    if not hrp then return nil end
+    
+    local closest
+    local closestDist
+    local myPos = hrp.Position
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and not isOnSameTeam(plr) then
+            local enemyHRP = plr.Character:FindFirstChild("HumanoidRootPart")
+            local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+            if enemyHRP and humanoid and humanoid.Health > 0 then
+                local dist = (enemyHRP.Position - myPos).Magnitude
+                if dist <= 100 then
+                    if not closestDist or dist < closestDist then
+                        closest = plr
+                        closestDist = dist
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Ball finder with caching
+local ballCache = nil
+local ballCacheTime = 0
+local BALL_CACHE_DURATION = 0.5
+
+local function findBall()
+    local currentTime = tick()
+    
+    if ballCache and (currentTime - ballCacheTime) < BALL_CACHE_DURATION then
+        if ballCache.Parent then
+            return ballCache
+        else
+            ballCache = nil
+        end
+    end
+    
+    local balls = {}
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            local name = obj.Name:lower()
+            if name:find("ball") or name:find("football") then
+                table.insert(balls, obj)
+            end
+        elseif obj:IsA("Model") then
+            local nm = obj.Name:lower()
+            if nm:find("ball") or nm:find("football") then
+                local bp = obj:FindFirstChildWhichIsA("BasePart")
+                if bp then
+                    table.insert(balls, bp)
+                end
+            end
+        end
+    end
+    
+    local closest, closestDist
+    local hrp = getHumanoidRootPart()
+    if not hrp then return nil end
+    local myPos = hrp.Position
+    
+    for _, b in ipairs(balls) do
+        local dist = (b.Position - myPos).Magnitude
+        if not closestDist or dist < closestDist then
+            closest = b
+            closestDist = dist
+        end
+    end
+    
+    if closest then
+        ballCache = closest
+        ballCacheTime = currentTime
+    end
+    
+    return closest
+end
+
+-- Teleport function with realistic Y-offset (not flying way above ball)
+local function teleportToBall()
+    if not cfg.pullEnabled then return end
+    
+    local hrp = getHumanoidRootPart()
+    local ball = findBall()
+    
+    if hrp and ball then
+        local targetPos = ball.Position
+        local dir = (targetPos - hrp.Position).Unit
+        local teleportPos = targetPos - (dir * cfg.offsetDistance)
+        
+        -- Fixed Y-offset: Just place player 2 studs above ball to prevent flying too high
+        local yOffset = 2
+        
+        -- Teleport with rotation toward ball so you face it
+        local lookDir = (targetPos - teleportPos).Unit
+        hrp.CFrame = CFrame.new(teleportPos + Vector3.new(0, yOffset, 0), teleportPos + Vector3.new(0, yOffset, 0) + lookDir)
+    end
+end
+
+--------------------------------------------------------------------
+--// Input Handling
+--------------------------------------------------------------------
+local aiming = false
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    -- M1 press sets flag to true for continuous teleport
+    if cfg.pullEnabled and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        m1Held = true
+    end
+    
+    if input.KeyCode == cfg.qbAimKey then
+        aiming = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    -- M1 release sets flag to false to stop teleporting
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        m1Held = false
+    end
+    
+    if input.KeyCode == cfg.qbAimKey then
+        aiming = false
+    end
+end)
+
+--------------------------------------------------------------------
+--// Main Loop
+--------------------------------------------------------------------
+RunService.Heartbeat:Connect(function(dt)
+    local character = getCharacter()
+    local humanoid = getHumanoid()
+    
+    if humanoid then
+        if walkspeedEnabled then
+            humanoid.WalkSpeed = 16 * cfg.walkspeedMultiplier
+        else
+            humanoid.WalkSpeed = 16
+        end
+    end
+
+    -- Continuous teleport while M1 is held
+    if m1Held and cfg.pullEnabled then
+        teleportToBall()
+    end
+
+    -- Mobile teleport check
+    if mobilePullButton and mobilePullButton.checkTeleport() then
+        teleportToBall()
+    end
+
+    if cfg.hitboxVisualizerEnabled then
+        if character then
+            local head = character:FindFirstChild("Head")
+            if head then
+                head.Size = Vector3.new(2 * cfg.hitboxSize, 2 * cfg.hitboxSize, 2 * cfg.hitboxSize)
+                head.Transparency = 0.5
+            end
+        end
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local otherHead = player.Character:FindFirstChild("Head")
+                if otherHead then
+                    otherHead.Size = Vector3.new(2 * cfg.hitboxSize, 2 * cfg.hitboxSize, 2 * cfg.hitboxSize)
+                    otherHead.Transparency = 0.5
+                end
+            end
+        end
+    else
+        if character then
+            local head = character:FindFirstChild("Head")
+            if head then
+                head.Size = Vector3.new(2, 2, 2)
+                head.Transparency = 0
+            end
+        end
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local otherHead = player.Character:FindFirstChild("Head")
+                if otherHead then
+                    otherHead.Size = Vector3.new(2, 2, 2)
+                    otherHead.Transparency = 0
+                end
+            end
+        end
+    end
+
+    local hrp = getCharacter() and getCharacter():FindFirstChild("HumanoidRootPart")
+    if hrp and jumpPowerEnabled then
+        if not jumpForce then
+            jumpForce = Instance.new("BodyForce", hrp)
+            jumpForce.Name = "JumpBoost"
+        end
+        local jp = cfg.jumpPower / 100 * 80
+        jumpForce.Force = Vector3.new(0, jp * 100, 0)
+    else
+        if jumpForce then
+            jumpForce:Destroy()
+            jumpForce = nil
+        end
+    end
+
+    if cfg.qbAimbotEnabled and aiming then
+        local target = getClosestTarget()
+        if target and target.Character then
+            local enemyHRP = target.Character:FindFirstChild("HumanoidRootPart")
+            if enemyHRP then
+                local myHRP = getHumanoidRootPart()
+                if myHRP then
+                    local targetPos = enemyHRP.Position
+                    local targetVel = enemyHRP.AssemblyLinearVelocity or enemyHRP.Velocity
+                    local predictedPos = targetPos + targetVel * cfg.qbPredictionTime
+
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(predictedPos)
+                    local mousePos = UserInputService:GetMouseLocation()
+
+                    local dx = screenPos.X - mousePos.X
+                    local dy = screenPos.Y - mousePos.Y
+                    local dist = math.sqrt(dx*dx + dy*dy)
+
+                    local fovPixels = (cfg.qbFOV / 180) * math.min(Camera.ViewportSize.X, Camera.ViewportSize.Y) / 2
+
+                    if onScreen and dist <= fovPixels then
+                        local direction = (predictedPos - Camera.CFrame.Position).Unit
+                        local targetCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+                        Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, cfg.qbSmoothness)
+                    end
+                end
+            end
+        end
+    end
+
+    if cfg.flyEnabled then
+        local hrp = getHumanoidRootPart()
+        if hrp then
+            local moveVec = Vector3.zero
+            local cam = Camera
+            local camCFrame = cam.CFrame
+
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveVec = moveVec + camCFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveVec = moveVec - camCFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveVec = moveVec - camCFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveVec = moveVec + camCFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveVec = moveVec + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveVec = moveVec + Vector3.new(0, -1, 0)
+            end
+
+            if moveVec.Magnitude > 0 then
+                moveVec = moveVec.Unit
+            end
+
+            hrp.Velocity = moveVec * cfg.flySpeed
+        end
+    end
+end)
